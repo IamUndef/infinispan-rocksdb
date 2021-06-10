@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:infinispan:config:12.1 http://www.infinispan.org/schemas/infinispan-config-12.1.xsd
+                                urn:infinispan:config:store:rocksdb:12.1 http://www.infinispan.org/schemas/infinispan-cachestore-rocksdb-config-12.1.xsd"
+            xmlns="urn:infinispan:config:12.1">
+    <cache-container>
+        <transport cluster="test" stack="udp"/>
+        <serialization marshaller="org.infinispan.commons.marshall.JavaSerializationMarshaller">
+            <allow-list>
+                <class>org.example.infinispan.rocksdb.model.TestModel</class>
+                <regex>java.util.*</regex>
+            </allow-list>
+        </serialization>
+        <global-state>
+            <persistent-location path="${data.dir:data}"/>
+        </global-state>
+        <replicated-cache name="test">
+            <persistence>
+                <rocksdb-store xmlns="urn:infinispan:config:store:rocksdb:12.1" path="rocksdb/data" fetch-state="true">
+                    <expiration path="rocksdb/expired"/>
+                </rocksdb-store>
+            </persistence>
+            <indexing>
+                <index-reader refresh-interval="5000"/>
+                <indexed-entities>
+                    <indexed-entity>org.example.infinispan.rocksdb.model.TestModel</indexed-entity>
+                </indexed-entities>
+            </indexing>
+            <state-transfer await-initial-transfer="false"/>
+        </replicated-cache>
+    </cache-container>
+</infinispan>
